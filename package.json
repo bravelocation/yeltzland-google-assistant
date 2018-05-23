@@ -1,0 +1,23 @@
+{
+  "name": "yeltzland-google-assistant",
+  "description": "AWS Lambda implementation of Yeltzland Google Assistant for DialogFlow",
+  "version": "0.0.1",
+  "author": "John Pollard <johnp@bravelocation.com>",
+  "license": "MIT",
+  "engines": {
+    "node": "~6.0"
+  },
+  "dependencies": {
+    "actions-on-google": "2.0.0-alpha.4",
+    "request": "*",
+    "promise": "*",
+    "dateformat": "*"
+  },
+  "devDependencies": {
+    "bst": "0.0.1",
+    "mocha": "^5.1.1"
+  },
+  "scripts": {
+    "test": "mocha"
+  }
+}
