@@ -63,28 +63,22 @@ app.intent('LastResult', (conv) => {
 });
 
 app.intent('GameTimeFixture', (conv, params) => {
-  var gameTime = params.date;
-
-  return timeBasedData(gameTime).then(function(result) {
+  return timeBasedData(params).then(function(result) {
     if (result == null || result.speechOutput == "") {
-      conv.add("No games found on that day");
+      conv.add("No games found then");
     } else {
       conv.add(result.speechOutput);
     }
-    
   });
 });
 
 app.intent('GameTimeResult', (conv, params) => {
-  var gameTime = params.date;
-
-  return timeBasedData(gameTime).then(function(result) {
+  return timeBasedData(params).then(function(result) {
     if (result == null || result.speechOutput == "") {
-      conv.add("No games found on that day");
+      conv.add("No games found then");
     } else {
       conv.add(result.speechOutput);
     }
-    
   });
 });
 
@@ -113,9 +107,9 @@ function singleGame(useFixtures) {
   });
 };
 
-function timeBasedData(gameTime) {
+function timeBasedData(params) {
   return new Promise(function(resolve, reject) {
-    var parsedDate = parseSingleDate(gameTime);
+    var parsedDate = parseDateParameters(params);
     if (parsedDate) {
       yeltzlandSpeech.timeBased(parsedDate.startTime, parsedDate.endTime, function(result) {
         resolve(result);
@@ -126,19 +120,37 @@ function timeBasedData(gameTime) {
   });
 };
 
-// *** Date parsing function
-function parseSingleDate(gameTime) {
-  var parseDate = new Date(gameTime);
+// *** Date parameter parsing function
+function parseDateParameters(params) {
+  var gameTime = params.date;
+  var datePeriod = params["date-period"];
 
-  // Find start and end of that day
-  if (parseDate) {
-    return {
-      startTime: new Date(parseDate.getFullYear(), parseDate.getMonth(), parseDate.getDate(), 0, 0, 0),
-      endTime: new Date(parseDate.getFullYear(), parseDate.getMonth(), parseDate.getDate(), 23, 59, 59)
-    };
-  } else {
-    return null;
+  // Use the single date if possible
+  if (gameTime && gameTime != "") {
+    // Find start and end of that day
+    var parseDate = new Date(gameTime);
+    if (parseDate) {
+      return {
+        startTime: new Date(parseDate.getFullYear(), parseDate.getMonth(), parseDate.getDate(), 0, 0, 0),
+        endTime: new Date(parseDate.getFullYear(), parseDate.getMonth(), parseDate.getDate(), 23, 59, 59)
+      };
+    }
   }
+
+  if (datePeriod) {
+    var parseStartDate = new Date(datePeriod.startDate);
+    var parseEndDate = new Date(datePeriod.endDate);
+  
+    // Find start and end of that day
+    if (parseStartDate && parseEndDate) {
+      return {
+        startTime: new Date(parseStartDate.getFullYear(), parseStartDate.getMonth(), parseStartDate.getDate(), 0, 0, 0),
+        endTime: new Date(parseEndDate.getFullYear(), parseEndDate.getMonth(), parseEndDate.getDate(), 23, 59, 59)
+      };
+    }
+  }
+
+  return null;
 }
 
 exports.handler = app;
