@@ -44,9 +44,24 @@ app.intent('Result', (conv, params) => {
   });
 });
 
+app.intent('GameScore', (conv) => {
+  return gameScore().then(function(result) {
+    conv.add(result.speechOutput);
+  });
+});
+
+
 function teamBased(useFixtures, team) {
   return new Promise(function(resolve, reject) {
     yeltzlandSpeech.teamBased(useFixtures, team, function(result) {
+      resolve(result);
+    });
+  });
+};
+
+function gameScore() {
+  return new Promise(function(resolve, reject) {
+    yeltzlandSpeech.gameScore(function(result) {
       resolve(result);
     });
   });
