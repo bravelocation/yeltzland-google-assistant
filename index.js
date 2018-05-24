@@ -6,7 +6,8 @@ var Promise = require('promise');
 const {
   dialogflow,
   Image,
-  BasicCard
+  BasicCard,
+  SimpleResponse
 } = require('actions-on-google');
 
 // Create an app instance
@@ -27,11 +28,11 @@ app.intent('Finish', (conv) => {
 });
 
 app.intent('BestTeam', conv => {
-  generateOutput(conv, yeltzlandSpeech.bestTeamSpeak)
+  generateSpeechOutput(conv, yeltzlandSpeech.bestTeamSpeak, yeltzlandSpeech.bestTeamText)
 });
 
 app.intent('WorstTeam', conv => {
-  generateOutput(conv, yeltzlandSpeech.worstTeamSpeak)
+  generateSpeechOutput(conv, yeltzlandSpeech.worstTeamSpeak, yeltzlandSpeech.worstTeamText)
 });
 
 app.intent('Fixture', (conv, params) => {
@@ -91,6 +92,13 @@ app.intent('GameTimeResult', (conv, params) => {
 //*** Output generation
 function generateOutput(conv, mainText) {
   conv.add(mainText);
+}
+
+function generateSpeechOutput(conv, ssml, mainText) {
+  conv.ask(new SimpleResponse({
+    speech: ssml,
+    text: mainText,
+  }));
 }
 
 function generateBasicCardOutput(conv, mainText, title) {

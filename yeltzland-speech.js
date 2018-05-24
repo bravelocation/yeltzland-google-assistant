@@ -6,8 +6,10 @@ var yeltzlandSpeech = {};
 yeltzlandSpeech.welcomeText = 'Thanks for coming! What do you want to know about the mighty Yeltz?';
 yeltzlandSpeech.finishText = 'Laters';
 yeltzlandSpeech.fallbackText = "I didn't catch that. Can you ask me something else?";
+yeltzlandSpeech.bestTeamText = 'The best team is Halesowen Town';
+yeltzlandSpeech.worstTeamText = 'The worst team are Stourbridge Town';
 yeltzlandSpeech.bestTeamSpeak = '<speak><p><emphasis level="strong">Halesowen Town</emphasis></p><p><emphasis level="strong">Halesowen Town F C</emphasis></p><p><emphasis level="strong">They\'re by far the greatest team</emphasis></p><p><emphasis level="strong">The world has ever seen</emphasis></p></speak>';
-yeltzlandSpeech.worstTeamSpeak = '<speak><p><emphasis level="strong">Halesowen Town</emphasis></p><p><emphasis level="strong">Halesowen Town F C</emphasis></p><p><emphasis level="strong">They\'re by far the greatest team</emphasis></p><p><emphasis level="strong">The world has ever seen</emphasis></p></speak>';
+yeltzlandSpeech.worstTeamSpeak = '<speak>The worst team are Stour <say-as interpret-as="expletive">bridge</say-as> Town</speak>'
 
 yeltzlandSpeech.teamBased = function(useFixtures, team, callback) {
 
@@ -128,7 +130,7 @@ yeltzlandSpeech.singleGame = function(useFixtures, callback) {
             var matches = [];
 
             if (useFixtures) {
-                cardTitle = "Next game";
+                cardTitle = matchToTitle(nextGame)
                 if (nextGame == null) {
                     speechOutput = "No more fixtures found";
                 } else {
@@ -136,7 +138,7 @@ yeltzlandSpeech.singleGame = function(useFixtures, callback) {
                     speechOutput = matchesToSpeech(matches);
                 }
             } else {
-                cardTitle = "Last game";
+                cardTitle = matchToTitle(lastGame)
                 if (lastGame == null) {
                     speechOutput = "No more games found";
                 } else {
@@ -159,6 +161,7 @@ yeltzlandSpeech.singleGame = function(useFixtures, callback) {
 yeltzlandSpeech.gameScore = function(callback) {
     let speechOutput = "";
     let repromptText = null;
+    let cardTitle = "Latest score";
 
     getGameScoreData(function(err, data) {
         if (err != null) {
@@ -177,12 +180,20 @@ yeltzlandSpeech.gameScore = function(callback) {
             } else {
                 speechOutput += opponent + " " + opponentScore + ", Halesowen Town " + yeltzScore;               
             }
+
+            var generatedMatch = {
+                Opponent: data.match.Opponent,
+                Home: data.match.Home,
+                TeamScore: data.yeltzScore,
+                OpponentScore: data.opponentScore
+            }
+            cardTitle = matchToTitle(generatedMatch);
         }
 
         var result = {
             speechOutput: speechOutput,
             repromptText: repromptText,
-            cardTitle: "Latest score"
+            cardTitle: cardTitle
         }
 
         callback(result);
@@ -225,6 +236,48 @@ function matchesToSpeech(matches) {
     }  
 
     return output;
+}
+
+function matchToTitle(match) {
+    var output = "";
+    var fixture = (match.TeamScore == null) || (match.OpponentScore == null);  
+    var yeltzAtHome = (match.Home == "1");
+    
+    if (yeltzAtHome) {
+        output += "Yeltz"; 
+    } else {
+        output += match.Opponent;
+    }
+
+    if (fixture) {
+        output += " v ";  
+    } else {
+        output += " ";  
+        if (yeltzAtHome) {
+            output += match.TeamScore; 
+        } else {
+            output += match.OpponentScore;
+        }
+        output += " ";          
+    }
+
+    if (!yeltzAtHome) {
+        output += "Yeltz"; 
+    } else {
+        output += match.Opponent;
+    }
+
+    if (!fixture) {
+        output += " ";  
+        if (!yeltzAtHome) {
+            output += match.TeamScore; 
+        } else {
+            output += match.OpponentScore;
+        }       
+    }
+        
+    return output;
+    
 }
 
 function speakScore(score) {
