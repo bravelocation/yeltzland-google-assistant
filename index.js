@@ -13,26 +13,31 @@ const {
 const app = dialogflow();
 
 app.intent('Default Welcome Intent', conv => {
-  conv.ask(yeltzlandSpeech.welcomeText)
+  generateOutput(conv, yeltzlandSpeech.welcomeText)
 });
 
 app.intent('Default Fallback Intent', conv => {
-  conv.ask("I didn't understand. Can you tell me something else?")
+  generateOutput(conv, yeltzlandSpeech.fallbackText)
+});
+
+app.intent('Finish', (conv) => {
+  conv.expectUserResponse = false;
+  generateOutput(conv, yeltzlandSpeech.finishText);
 });
 
 app.intent('BestTeam', conv => {
-  conv.ask("The best team is Halesowen Town")
+  generateOutput(conv, yeltzlandSpeech.bestTeamSpeak)
 });
 
 app.intent('WorstTeam', conv => {
-  conv.ask("The best team is Stourbridge Town")
+  generateOutput(conv, yeltzlandSpeech.worstTeamSpeak)
 });
 
 app.intent('Fixture', (conv, params) => {
   var team = params.Team;
 
   return teamBased(true, team).then(function(result) {
-    conv.add(result.speechOutput);
+    generateOutput(conv, result.speechOutput);
   });
 });
 
@@ -40,34 +45,34 @@ app.intent('Result', (conv, params) => {
   var team = params.Team;
 
   return teamBased(false, team).then(function(result) {
-    conv.add(result.speechOutput);
+    generateOutput(conv, result.speechOutput);
   });
 });
 
 app.intent('GameScore', (conv) => {
   return gameScore().then(function(result) {
-    conv.add(result.speechOutput);
+    generateOutput(conv, result.speechOutput);
   });
 });
 
 app.intent('NextGame', (conv) => {
   return singleGame(true).then(function(result) {
-    conv.add(result.speechOutput);
+    generateOutput(conv, result.speechOutput);
   });
 });
 
 app.intent('LastResult', (conv) => {
   return singleGame(false).then(function(result) {
-    conv.add(result.speechOutput);
+    generateOutput(conv, result.speechOutput);
   });
 });
 
 app.intent('GameTimeFixture', (conv, params) => {
   return timeBasedData(params).then(function(result) {
     if (result == null || result.speechOutput == "") {
-      conv.add("No games found then");
+      generateOutput(conv, "No games found then");
     } else {
-      conv.add(result.speechOutput);
+      generateOutput(conv, result.speechOutput);
     }
   });
 });
@@ -75,12 +80,17 @@ app.intent('GameTimeFixture', (conv, params) => {
 app.intent('GameTimeResult', (conv, params) => {
   return timeBasedData(params).then(function(result) {
     if (result == null || result.speechOutput == "") {
-      conv.add("No games found then");
+      generateOutput(conv, "No games found then");
     } else {
-      conv.add(result.speechOutput);
+      generateOutput(conv, result.speechOutput);
     }
   });
 });
+
+//*** Output generation
+function generateOutput(conv, mainText) {
+  conv.add(mainText);
+}
 
 //**** Helper functions that return promises
 function teamBased(useFixtures, team) {
