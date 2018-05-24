@@ -8,10 +8,10 @@
     "node": "~6.0"
   },
   "dependencies": {
-    "actions-on-google": "2.0.0-alpha.4",
-    "request": "*",
+    "actions-on-google": "^2.1.2",
+    "dateformat": "*",
     "promise": "*",
-    "dateformat": "*"
+    "request": "*"
   },
   "devDependencies": {
     "bst": "0.0.1",

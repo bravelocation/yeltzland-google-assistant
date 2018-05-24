@@ -7,7 +7,8 @@ const {
   dialogflow,
   Image,
   BasicCard,
-  SimpleResponse
+  SimpleResponse,
+  Table
 } = require('actions-on-google');
 
 // Create an app instance
@@ -39,7 +40,7 @@ app.intent('Fixture', (conv, params) => {
   var team = params.Team;
 
   return teamBased(true, team).then(function(result) {
-    generateOutput(conv, result.speechOutput);
+    generateMatchesOutput(conv, result.speechOutput, 'Games vs ' + team, result.matches);
   });
 });
 
@@ -47,7 +48,7 @@ app.intent('Result', (conv, params) => {
   var team = params.Team;
 
   return teamBased(false, team).then(function(result) {
-    generateOutput(conv, result.speechOutput);
+    generateMatchesOutput(conv, result.speechOutput, 'Games vs ' + team, result.matches);
   });
 });
 
@@ -74,7 +75,7 @@ app.intent('GameTimeFixture', (conv, params) => {
     if (result == null || result.speechOutput == "") {
       generateOutput(conv, "No games found then");
     } else {
-      generateOutput(conv, result.speechOutput);
+      generateMatchesOutput(conv, result.speechOutput, 'Games', result.matches);
     }
   });
 });
@@ -84,7 +85,7 @@ app.intent('GameTimeResult', (conv, params) => {
     if (result == null || result.speechOutput == "") {
       generateOutput(conv, "No games found then");
     } else {
-      generateOutput(conv, result.speechOutput);
+      generateMatchesOutput(conv, result.speechOutput, 'Results', result.matches);
     }
   });
 });
@@ -108,13 +109,50 @@ function generateBasicCardOutput(conv, mainText, title) {
   if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
     // Create a basic card
     conv.ask(new BasicCard({
-      text: mainText,
+      text: "",
       title: title,
       image: new Image({
         url: 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png',
         alt: 'Halesowen Town FC'
       })
     }));
+  }
+}
+
+function generateMatchesOutput(conv, mainText, title, matches) {
+  conv.add(mainText);
+  
+  // Add table if we have any matches
+  if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT') && matches.length > 0) {
+    var matchRows = [];
+    for (var i = 0; i < matches.length; i++) {
+      var match = matches[i];
+
+      var newMatchRow = []; 
+      newMatchRow.push(match.Opponent); 
+      newMatchRow.push((match.Home == "1") ?  "H" : "A");
+
+      var fixture = (match.TeamScore == null) || (match.OpponentScore == null); 
+      if (fixture) {
+        newMatchRow.push(yeltzlandSpeech.displayDate(match.MatchDateTime));
+      }
+      else {
+        newMatchRow.push(match.TeamScore + '-' + match.OpponentScore);
+      }
+      
+      matchRows.push(newMatchRow);
+    }
+
+    conv.ask(new Table({
+      dividers: true,
+      columns: [{header:'Opponent', align: 'LEADING'}, {header:'Home', align: 'CENTER'}, {header:'Date or Score', align: 'TRAILING'}],
+      rows: matchRows,
+      title: title,
+      image: new Image({
+        url: 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png',
+        alt: 'Halesowen Town FC'
+      })
+    }))
   }
 }
 

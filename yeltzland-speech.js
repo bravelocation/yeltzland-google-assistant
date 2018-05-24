@@ -3,7 +3,7 @@ var request = require("request");
 var dateFormat = require('dateformat');
 
 var yeltzlandSpeech = {};
-yeltzlandSpeech.welcomeText = 'Thanks for coming! What do you want to know about the mighty Yeltz?';
+yeltzlandSpeech.welcomeText = 'Thanks for coming! What do you want to know about Halesowen Town?';
 yeltzlandSpeech.finishText = 'Laters';
 yeltzlandSpeech.fallbackText = "I didn't catch that. Can you ask me something else?";
 yeltzlandSpeech.bestTeamText = 'The best team is Halesowen Town';
@@ -15,6 +15,7 @@ yeltzlandSpeech.teamBased = function(useFixtures, team, callback) {
 
     let speechOutput = "";
     let repromptText = null;
+    let matches = [];
 
     getMatchesData(function(err, data) {
         if (err != null) {
@@ -42,19 +43,22 @@ yeltzlandSpeech.teamBased = function(useFixtures, team, callback) {
                     speechOutput = "No more fixtures found against " + team;
                 } else {
                     speechOutput = matchesToSpeech(fixtures);
+                    matches = fixtures;
                 }
             } else {
                 if (results.length == 0) {
                     speechOutput = "No results found against " + team;
                 } else {
                     speechOutput = matchesToSpeech(results);
+                    matches = results;
                 }
             }
         }
 
         var result = {
             speechOutput: speechOutput,
-            repromptText: repromptText 
+            repromptText: repromptText,
+            matches: matches
         }
 
         callback(result);
@@ -65,14 +69,13 @@ yeltzlandSpeech.teamBased = function(useFixtures, team, callback) {
 yeltzlandSpeech.timeBased = function(timeStart, timeEnd, callback) {
     let speechOutput = "";
     let repromptText = null;
+    let matches = [];
 
     getMatchesData(function(err, data) {
         if (err != null) {
             speechOutput = "I'm sorry I couldn't find that out right now";
             repromptText = "Please try again later";
         } else {
-            var matches = [];
-
             // Go through each of the matches
             for (var i = 0; i < data.Matches.length; i++) {
                 var match = data.Matches[i];      
@@ -93,7 +96,8 @@ yeltzlandSpeech.timeBased = function(timeStart, timeEnd, callback) {
 
         var result = {
             speechOutput: speechOutput,
-            repromptText: repromptText 
+            repromptText: repromptText,
+            matches: matches 
         }
 
         callback(result);
@@ -101,7 +105,7 @@ yeltzlandSpeech.timeBased = function(timeStart, timeEnd, callback) {
 };
 
 yeltzlandSpeech.singleGame = function(useFixtures, callback) {
-    let cardTitle = "";
+    let cardTitle = "No games found";
     let speechOutput = "";
     let repromptText = null;
 
@@ -130,18 +134,18 @@ yeltzlandSpeech.singleGame = function(useFixtures, callback) {
             var matches = [];
 
             if (useFixtures) {
-                cardTitle = matchToTitle(nextGame)
                 if (nextGame == null) {
                     speechOutput = "No more fixtures found";
                 } else {
+                    cardTitle = matchToTitle(nextGame)
                     matches.push(nextGame);
                     speechOutput = matchesToSpeech(matches);
                 }
             } else {
-                cardTitle = matchToTitle(lastGame)
                 if (lastGame == null) {
                     speechOutput = "No more games found";
                 } else {
+                    cardTitle = matchToTitle(lastGame)
                     matches.push(lastGame);
                     speechOutput = matchesToSpeech(matches);
                 }
@@ -198,6 +202,10 @@ yeltzlandSpeech.gameScore = function(callback) {
 
         callback(result);
     });    
+}
+
+yeltzlandSpeech.displayDate = function(matchDateString) {
+    return dateFormat(parseDate(matchDateString), "mmmm dS HH:MM");
 }
 
 /*
