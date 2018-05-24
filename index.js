@@ -6,6 +6,7 @@ var Promise = require('promise');
 const {
   dialogflow,
   Image,
+  BasicCard
 } = require('actions-on-google');
 
 // Create an app instance
@@ -51,19 +52,19 @@ app.intent('Result', (conv, params) => {
 
 app.intent('GameScore', (conv) => {
   return gameScore().then(function(result) {
-    generateOutput(conv, result.speechOutput);
+    generateBasicCardOutput(conv, result.speechOutput, result.cardTitle);
   });
 });
 
 app.intent('NextGame', (conv) => {
   return singleGame(true).then(function(result) {
-    generateOutput(conv, result.speechOutput);
+    generateBasicCardOutput(conv, result.speechOutput, result.cardTitle);
   });
 });
 
 app.intent('LastResult', (conv) => {
   return singleGame(false).then(function(result) {
-    generateOutput(conv, result.speechOutput);
+    generateBasicCardOutput(conv, result.speechOutput, result.cardTitle);
   });
 });
 
@@ -90,6 +91,23 @@ app.intent('GameTimeResult', (conv, params) => {
 //*** Output generation
 function generateOutput(conv, mainText) {
   conv.add(mainText);
+}
+
+function generateBasicCardOutput(conv, mainText, title) {
+  // Send the simple response first
+  conv.ask(mainText);
+
+  if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
+    // Create a basic card
+    conv.ask(new BasicCard({
+      text: mainText,
+      title: title,
+      image: new Image({
+        url: 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png',
+        alt: 'Halesowen Town FC'
+      })
+    }));
+  }
 }
 
 //**** Helper functions that return promises

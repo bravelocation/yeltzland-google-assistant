@@ -4,7 +4,7 @@ var dateFormat = require('dateformat');
 
 var yeltzlandSpeech = {};
 yeltzlandSpeech.welcomeText = 'Thanks for coming! What do you want to know about the mighty Yeltz?';
-yeltzlandSpeech.finishText = 'See you a bit';
+yeltzlandSpeech.finishText = 'Laters';
 yeltzlandSpeech.fallbackText = "I didn't catch that. Can you ask me something else?";
 yeltzlandSpeech.bestTeamSpeak = '<speak><p><emphasis level="strong">Halesowen Town</emphasis></p><p><emphasis level="strong">Halesowen Town F C</emphasis></p><p><emphasis level="strong">They\'re by far the greatest team</emphasis></p><p><emphasis level="strong">The world has ever seen</emphasis></p></speak>';
 yeltzlandSpeech.worstTeamSpeak = '<speak><p><emphasis level="strong">Halesowen Town</emphasis></p><p><emphasis level="strong">Halesowen Town F C</emphasis></p><p><emphasis level="strong">They\'re by far the greatest team</emphasis></p><p><emphasis level="strong">The world has ever seen</emphasis></p></speak>';
@@ -181,7 +181,8 @@ yeltzlandSpeech.gameScore = function(callback) {
 
         var result = {
             speechOutput: speechOutput,
-            repromptText: repromptText 
+            repromptText: repromptText,
+            cardTitle: "Latest score"
         }
 
         callback(result);
