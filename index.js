@@ -29,7 +29,7 @@ app.intent('Finish', (conv) => {
 });
 
 app.intent('BestTeam', conv => {
-  generateSpeechOutput(conv, yeltzlandSpeech.bestTeamSpeak, yeltzlandSpeech.bestTeamText)
+  generateSpeechOutput(conv, yeltzlandSpeech.bestTeamSpeak, yeltzlandSpeech.bestTeamText, "Halesowen Town")
 });
 
 app.intent('WorstTeam', conv => {
@@ -95,11 +95,22 @@ function generateOutput(conv, mainText) {
   conv.add(mainText);
 }
 
-function generateSpeechOutput(conv, ssml, mainText) {
+function generateSpeechOutput(conv, ssml, mainText, title) {
   conv.ask(new SimpleResponse({
     speech: ssml,
     text: mainText,
   }));
+
+  if (title && conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
+    conv.ask(new BasicCard({
+      text: "",
+      title: title,
+      image: new Image({
+        url: 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png',
+        alt: 'Halesowen Town FC'
+      })
+    }));    
+  }
 }
 
 function generateCardOutput(conv, mainText, title) {
