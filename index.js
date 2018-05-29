@@ -16,7 +16,7 @@ const {
 const app = dialogflow();
 
 app.intent('Default Welcome Intent', conv => {
-  generateOutput(conv, yeltzlandSpeech.welcomeText)
+  generateCardOutput(conv, yeltzlandSpeech.welcomeText, "Halesowen Town")
 });
 
 app.intent('Default Fallback Intent', conv => {
@@ -100,6 +100,21 @@ function generateSpeechOutput(conv, ssml, mainText) {
     speech: ssml,
     text: mainText,
   }));
+}
+
+function generateCardOutput(conv, mainText, title) {
+  conv.add(mainText);
+  if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
+    // Create a basic card
+    conv.ask(new BasicCard({
+      text: "",
+      title: title,
+      image: new Image({
+        url: 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png',
+        alt: 'Halesowen Town FC'
+      })
+    }));
+  }
 }
 
 function generateSingleGameOutput(conv, mainText, title, matches) {
