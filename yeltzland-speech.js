@@ -155,7 +155,8 @@ yeltzlandSpeech.singleGame = function(useFixtures, callback) {
         var result = {
             speechOutput: speechOutput,
             repromptText: repromptText,
-            cardTitle: cardTitle
+            cardTitle: cardTitle,
+            matches: matches
         }
 
         callback(result);
@@ -168,6 +169,8 @@ yeltzlandSpeech.gameScore = function(callback) {
     let cardTitle = "Latest score";
 
     getGameScoreData(function(err, data) {
+        var matches = [];
+
         if (err != null) {
             speechOutput = "I'm sorry I couldn't find that out right now";
             repromptText = "Please try again later";
@@ -192,12 +195,14 @@ yeltzlandSpeech.gameScore = function(callback) {
                 OpponentScore: data.opponentScore
             }
             cardTitle = matchToTitle(generatedMatch);
+            matches.push(generatedMatch);
         }
 
         var result = {
             speechOutput: speechOutput,
             repromptText: repromptText,
-            cardTitle: cardTitle
+            cardTitle: cardTitle,
+            matches: matches
         }
 
         callback(result);
