@@ -16,16 +16,34 @@ const {
 const app = dialogflow();
 
 app.intent('Default Welcome Intent', conv => {
-  generateCardOutput(conv, yeltzlandSpeech.welcomeText, "Halesowen Town")
+  // Only place we should .ask() as we are expecting a response
+  conv.ask(yeltzlandSpeech.welcomeText);
+
+  if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
+    // Create a basic card
+    conv.add(new BasicCard({
+      text: "",
+      title: "Halesowen Town",
+      image: new Image({
+        url: 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png',
+        alt: 'Halesowen Town FC'
+      })
+    }));
+  }
+
+  conv.expectUserResponse = true;
 });
 
 app.intent('Default Fallback Intent', conv => {
-  generateOutput(conv, yeltzlandSpeech.fallbackText)
+  generateSimpleOutput(conv, yeltzlandSpeech.fallbackText)
 });
 
 app.intent('Finish', (conv) => {
-  conv.expectUserResponse = false;
-  generateOutput(conv, yeltzlandSpeech.finishText);
+  conv.close(yeltzlandSpeech.finishText);
+});
+
+app.intent('actions.intent.CANCEL', (conv) => {
+  conv.close(yeltzlandSpeech.finishText);
 });
 
 app.intent('BestTeam', conv => {
@@ -73,7 +91,7 @@ app.intent('LastResult', (conv) => {
 app.intent('GameTimeFixture', (conv, params) => {
   return timeBasedData(params).then(function(result) {
     if (result == null || result.speechOutput == "") {
-      generateOutput(conv, "No games found then");
+      generateSimpleOutput(conv, "No games found then");
     } else {
       generateMatchesOutput(conv, result.speechOutput, 'Games', result.matches);
     }
@@ -83,7 +101,7 @@ app.intent('GameTimeFixture', (conv, params) => {
 app.intent('GameTimeResult', (conv, params) => {
   return timeBasedData(params).then(function(result) {
     if (result == null || result.speechOutput == "") {
-      generateOutput(conv, "No games found then");
+      generateSimpleOutput(conv, "No games found then");
     } else {
       generateMatchesOutput(conv, result.speechOutput, 'Results', result.matches);
     }
@@ -91,18 +109,19 @@ app.intent('GameTimeResult', (conv, params) => {
 });
 
 //*** Output generation
-function generateOutput(conv, mainText) {
+function generateSimpleOutput(conv, mainText) {
   conv.add(mainText);
+  addContinuation(conv);
 }
 
 function generateSpeechOutput(conv, ssml, mainText, title) {
-  conv.ask(new SimpleResponse({
+  conv.add(new SimpleResponse({
     speech: ssml,
     text: mainText,
   }));
 
   if (title && conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
-    conv.ask(new BasicCard({
+    conv.add(new BasicCard({
       text: "",
       title: title,
       image: new Image({
@@ -111,26 +130,13 @@ function generateSpeechOutput(conv, ssml, mainText, title) {
       })
     }));    
   }
-}
 
-function generateCardOutput(conv, mainText, title) {
-  conv.add(mainText);
-  if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
-    // Create a basic card
-    conv.ask(new BasicCard({
-      text: "",
-      title: title,
-      image: new Image({
-        url: 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png',
-        alt: 'Halesowen Town FC'
-      })
-    }));
-  }
+  addContinuation(conv);
 }
 
 function generateSingleGameOutput(conv, mainText, title, matches) {
   // Send the simple response first
-  conv.ask(mainText);
+  conv.add(mainText);
 
   if (conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
     // Create a table
@@ -154,7 +160,7 @@ function generateSingleGameOutput(conv, mainText, title, matches) {
       awayRow.push(!home ? match.TeamScore : match.OpponentScore);    
       matchRows.push(awayRow);
         
-      conv.ask(new Table({
+      conv.add(new Table({
         dividers: true,
         columns: [{header:'Team', align: 'LEADING'}, {header:'Score', align: 'TRAILING'}],
         rows: matchRows,
@@ -166,6 +172,8 @@ function generateSingleGameOutput(conv, mainText, title, matches) {
       }));
     }
   }
+
+  addContinuation(conv);
 }
 
 function generateMatchesOutput(conv, mainText, title, matches) {
@@ -192,7 +200,7 @@ function generateMatchesOutput(conv, mainText, title, matches) {
       matchRows.push(newMatchRow);
     }
 
-    conv.ask(new Table({
+    conv.add(new Table({
       dividers: true,
       columns: [{header:'Opponent', align: 'LEADING'}, {header:'Home', align: 'CENTER'}, {header:'Date or Score', align: 'TRAILING'}],
       rows: matchRows,
@@ -203,6 +211,13 @@ function generateMatchesOutput(conv, mainText, title, matches) {
       })
     }));
   }
+
+  addContinuation(conv);
+}
+
+function addContinuation(conv) {
+  // Always end the conversation right now
+  conv.expectUserResponse = false;
 }
 
 //**** Helper functions that return promises

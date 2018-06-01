@@ -3,13 +3,13 @@ var request = require("request");
 var dateFormat = require('dateformat');
 
 var yeltzlandSpeech = {};
-yeltzlandSpeech.welcomeText = 'Thanks for coming! What do you want to know about Halesowen Town?';
+yeltzlandSpeech.welcomeText = 'Thanks for coming! Ask me about results, fixtures or the latest score for Halesowen Town.';
 yeltzlandSpeech.finishText = 'See you later!';
 yeltzlandSpeech.fallbackText = "I didn't catch that. Can you ask me something else?";
 yeltzlandSpeech.bestTeamText = 'The best team is Halesowen Town';
 yeltzlandSpeech.worstTeamText = 'The worst team are Stourbridge Town';
 yeltzlandSpeech.bestTeamSpeak = '<speak><p><emphasis level="strong">Halesowen Town</emphasis></p><p><emphasis level="strong">Halesowen Town F C</emphasis></p><p><emphasis level="strong">They\'re by far the greatest team</emphasis></p><p><emphasis level="strong">The world has ever seen</emphasis></p></speak>';
-yeltzlandSpeech.worstTeamSpeak = '<speak>The worst team are Stour <say-as interpret-as="expletive">bridge</say-as> Town</speak>'
+yeltzlandSpeech.worstTeamSpeak = '<speak>The worst team are Stour <say-as interpret-as="expletive">bridge</say-as> Town</speak>';
 
 yeltzlandSpeech.teamBased = function(useFixtures, team, callback) {
 
@@ -183,9 +183,9 @@ yeltzlandSpeech.gameScore = function(callback) {
             speechOutput = "The latest score is ";
 
             if (home) {
-                speechOutput += "Halesowen Town " + yeltzScore + ", " + opponent + " " + opponentScore;
+                speechOutput += "Halesowen Town " + speakScore(yeltzScore) + ", " + opponent + " " + speakScore(opponentScore);
             } else {
-                speechOutput += opponent + " " + opponentScore + ", Halesowen Town " + yeltzScore;               
+                speechOutput += opponent + " " + speakScore(opponentScore) + ", Halesowen Town " + speakScore(yeltzScore);               
             }
 
             var generatedMatch = {
