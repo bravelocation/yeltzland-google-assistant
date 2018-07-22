@@ -8,7 +8,7 @@
     "node": "~6.0"
   },
   "dependencies": {
-    "actions-on-google": "^2.2.0",
+    "actions-on-google": "^2.1.2",
     "dateformat": "*",
     "promise": "*",
     "request": "*"
