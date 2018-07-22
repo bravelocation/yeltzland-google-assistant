@@ -47,11 +47,11 @@ app.intent('actions.intent.CANCEL', (conv) => {
 });
 
 app.intent('BestTeam', conv => {
-  generateSpeechOutput(conv, yeltzlandSpeech.bestTeamSpeak, yeltzlandSpeech.bestTeamText, "Halesowen Town")
+  generateSpeechOutput(conv, yeltzlandSpeech.bestTeamSpeak, yeltzlandSpeech.bestTeamText, "Halesowen Town", "Halesowen Town")
 });
 
 app.intent('WorstTeam', conv => {
-  generateSpeechOutput(conv, yeltzlandSpeech.worstTeamSpeak, yeltzlandSpeech.worstTeamText)
+  generateSpeechOutput(conv, yeltzlandSpeech.worstTeamSpeak, yeltzlandSpeech.worstTeamText, "Stourbridge Town", "Stourbridge")
 });
 
 app.intent('Fixture', (conv, params) => {
@@ -114,19 +114,27 @@ function generateSimpleOutput(conv, mainText) {
   addContinuation(conv);
 }
 
-function generateSpeechOutput(conv, ssml, mainText, title) {
+function generateSpeechOutput(conv, ssml, mainText, title, teamName) {
   conv.add(new SimpleResponse({
     speech: ssml,
     text: mainText,
   }));
 
   if (title && conv.surface.capabilities.has('actions.capability.SCREEN_OUTPUT')) {
+    var imageUrl = 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png';
+    var altName = 'Halesowen Town FC';
+  
+    if (teamName) {
+      imageUrl = yeltzlandSpeech.teamImageUrl(teamName);
+      altName = yeltzlandSpeech.titleCase(teamName);
+    }
+
     conv.add(new BasicCard({
       text: "",
       title: title,
       image: new Image({
-        url: 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png',
-        alt: 'Halesowen Town FC'
+        url: imageUrl,
+        alt: altName
       })
     }));    
   }
@@ -166,8 +174,8 @@ function generateSingleGameOutput(conv, mainText, title, matches) {
         rows: matchRows,
         title: title,
         image: new Image({
-          url: 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png',
-          alt: 'Halesowen Town FC'
+          url: yeltzlandSpeech.teamImageUrl(match.Opponent),
+          alt: match.Opponent
         })
       }));
     }
