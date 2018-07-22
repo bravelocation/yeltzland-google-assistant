@@ -58,7 +58,7 @@ app.intent('Fixture', (conv, params) => {
   var team = params.Team;
 
   return teamBased(true, team).then(function(result) {
-    generateMatchesOutput(conv, result.speechOutput, 'Games vs ' + team, result.matches);
+    generateMatchesOutput(conv, result.speechOutput, 'Games vs ' + team, result.matches, team);
   });
 });
 
@@ -66,7 +66,7 @@ app.intent('Result', (conv, params) => {
   var team = params.Team;
 
   return teamBased(false, team).then(function(result) {
-    generateMatchesOutput(conv, result.speechOutput, 'Games vs ' + team, result.matches);
+    generateMatchesOutput(conv, result.speechOutput, 'Games vs ' + team, result.matches, team);
   });
 });
 
@@ -184,7 +184,7 @@ function generateSingleGameOutput(conv, mainText, title, matches) {
   addContinuation(conv);
 }
 
-function generateMatchesOutput(conv, mainText, title, matches) {
+function generateMatchesOutput(conv, mainText, title, matches, teamName) {
   conv.add(mainText);
   
   // Add table if we have any matches
@@ -208,14 +208,22 @@ function generateMatchesOutput(conv, mainText, title, matches) {
       matchRows.push(newMatchRow);
     }
 
+    var imageUrl = 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png';
+    var altName = 'Halesowen Town FC';
+  
+    if (teamName) {
+      imageUrl = yeltzlandSpeech.teamImageUrl(teamName);
+      altName = yeltzlandSpeech.titleCase(teamName);
+    }
+
     conv.add(new Table({
       dividers: true,
       columns: [{header:'Opponent', align: 'LEADING'}, {header:'Home', align: 'CENTER'}, {header:'Date or Score', align: 'TRAILING'}],
       rows: matchRows,
       title: title,
       image: new Image({
-        url: 'https://s3-eu-west-1.amazonaws.com/yeltzland-alexa-images/htfc_logo_small.png',
-        alt: 'Halesowen Town FC'
+        url: imageUrl,
+        alt: altName
       })
     }));
   }
