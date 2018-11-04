@@ -233,7 +233,7 @@ function generateMatchesOutput(conv, mainText, title, matches, teamName) {
 
 function addContinuation(conv) {
   // Always end the conversation right now
-  conv.expectUserResponse = false;
+  conv.expectUserResponse = true;
 }
 
 //**** Helper functions that return promises
