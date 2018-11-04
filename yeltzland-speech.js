@@ -216,7 +216,7 @@ yeltzlandSpeech.gameScore = function(callback) {
 };
 
 yeltzlandSpeech.displayDate = function(matchDateString) {
-    return dateFormat(parseDate(matchDateString), "mmmm dS HH:MM");
+    return dateFormat(parseDate(matchDateString), "ddd mmm dd HH:MM");
 };
 
 yeltzlandSpeech.teamImageUrl = function(teamName) {
