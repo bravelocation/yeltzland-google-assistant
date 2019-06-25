@@ -10,6 +10,7 @@ yeltzlandSpeech.bestTeamText = 'The best team is Halesowen Town';
 yeltzlandSpeech.worstTeamText = 'The worst team are Stourbridge Town';
 yeltzlandSpeech.bestTeamSpeak = '<speak><p><emphasis level="strong">Halesowen Town</emphasis></p><p><emphasis level="strong">Halesowen Town F C</emphasis></p><p><emphasis level="strong">They\'re by far the greatest team</emphasis></p><p><emphasis level="strong">The world has ever seen</emphasis></p></speak>';
 yeltzlandSpeech.worstTeamSpeak = '<speak>The worst team are Stour <say-as interpret-as="expletive">bridge</say-as> Town</speak>';
+yeltzlandSpeech.prompts = ['Ask me another!', 'Anything else I can help with?', 'Keep the questions coming!'];
 
 yeltzlandSpeech.teamBased = function(useFixtures, team, callback) {
 
@@ -118,7 +119,6 @@ yeltzlandSpeech.singleGame = function(useFixtures, callback) {
         } else {
             var nextGame = null;
             var lastGame = null;
-            var timeGame = null;
             
             // Go through each of the matches
             for (var i = 0; i < data.Matches.length; i++) {

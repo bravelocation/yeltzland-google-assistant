@@ -232,7 +232,10 @@ function generateMatchesOutput(conv, mainText, title, matches, teamName) {
 }
 
 function addContinuation(conv) {
-  // Always end the conversation right now
+  // If we are continuing, add a prompt!
+  var prompt = yeltzlandSpeech.prompts[Math.floor(Math.random()*yeltzlandSpeech.prompts.length)];
+  conv.add(prompt)
+
   conv.expectUserResponse = true;
 }
 

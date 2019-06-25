@@ -8,9 +8,9 @@
     "node": "~6.0"
   },
   "dependencies": {
-    "actions-on-google": "^2.4.1",
+    "actions-on-google": "^2.7.1",
     "dateformat": "*",
-    "promise": "^8.0.2",
+    "promise": "^8.0.3",
     "request": "^2.88.0"
   },
   "devDependencies": {
