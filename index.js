@@ -114,6 +114,8 @@ function generateSimpleOutput(conv, mainText, promptForAnother) {
 
   if (promptForAnother) {
     addContinuation(conv);
+  } else {
+    conv.expectUserResponse = false;
   }
 }
 
@@ -141,6 +143,8 @@ function generateSpeechOutput(conv, ssml, mainText, title, teamName) {
       })
     }));    
   }
+
+  conv.expectUserResponse = false;
 }
 
 function generateSingleGameOutput(conv, mainText, title, matches) {
@@ -180,7 +184,9 @@ function generateSingleGameOutput(conv, mainText, title, matches) {
 
   if (matches.length == 0) {
     addContinuation(conv);
-  } 
+  } else {
+    conv.expectUserResponse = false;
+  }
 }
 
 function generateMatchesOutput(conv, mainText, title, matches, teamName) {
@@ -229,6 +235,8 @@ function generateMatchesOutput(conv, mainText, title, matches, teamName) {
 
   if (matches.length == 0) {
     addContinuation(conv);
+  } else {
+    conv.expectUserResponse = false;
   }
 }
 
