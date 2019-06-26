@@ -35,7 +35,7 @@ app.intent('Default Welcome Intent', conv => {
 });
 
 app.intent('Default Fallback Intent', conv => {
-  generateSimpleOutput(conv, yeltzlandSpeech.fallbackText)
+  generateSimpleOutput(conv, yeltzlandSpeech.fallbackText, false)
 });
 
 app.intent('Finish', (conv) => {
@@ -91,7 +91,7 @@ app.intent('LastResult', (conv) => {
 app.intent('GameTimeFixture', (conv, params) => {
   return timeBasedData(params).then(function(result) {
     if (result == null || result.speechOutput == "") {
-      generateSimpleOutput(conv, "No games found then");
+      generateSimpleOutput(conv, "No games found then.", true);
     } else {
       generateMatchesOutput(conv, result.speechOutput, 'Games', result.matches);
     }
@@ -101,7 +101,7 @@ app.intent('GameTimeFixture', (conv, params) => {
 app.intent('GameTimeResult', (conv, params) => {
   return timeBasedData(params).then(function(result) {
     if (result == null || result.speechOutput == "") {
-      generateSimpleOutput(conv, "No games found then");
+      generateSimpleOutput(conv, "No games found then.", true);
     } else {
       generateMatchesOutput(conv, result.speechOutput, 'Results', result.matches);
     }
@@ -109,9 +109,12 @@ app.intent('GameTimeResult', (conv, params) => {
 });
 
 //*** Output generation
-function generateSimpleOutput(conv, mainText) {
+function generateSimpleOutput(conv, mainText, promptForAnother) {
   conv.add(mainText);
-  addContinuation(conv);
+
+  if (promptForAnother) {
+    addContinuation(conv);
+  }
 }
 
 function generateSpeechOutput(conv, ssml, mainText, title, teamName) {
@@ -138,8 +141,6 @@ function generateSpeechOutput(conv, ssml, mainText, title, teamName) {
       })
     }));    
   }
-
-  addContinuation(conv);
 }
 
 function generateSingleGameOutput(conv, mainText, title, matches) {
@@ -153,10 +154,6 @@ function generateSingleGameOutput(conv, mainText, title, matches) {
       var matchRows = [];
 
       var home = (match.Home == "1");
-      var homeTeam = home ? "Halesowen Town" : match.Opponent;
-      var awayTeam = !home ? "Halesowen Town" : match.Opponent;
-      var homeScore = home ? match.TeamScore : match.OpponentScore;
-      var awayScore = !home ? match.TeamScore : match.OpponentScore;
 
       var homeRow = [];
       homeRow.push(home ? "Halesowen Town" : match.Opponent);
@@ -181,7 +178,9 @@ function generateSingleGameOutput(conv, mainText, title, matches) {
     }
   }
 
-  addContinuation(conv);
+  if (matches.length == 0) {
+    addContinuation(conv);
+  } 
 }
 
 function generateMatchesOutput(conv, mainText, title, matches, teamName) {
@@ -228,12 +227,14 @@ function generateMatchesOutput(conv, mainText, title, matches, teamName) {
     }));
   }
 
-  addContinuation(conv);
+  if (matches.length == 0) {
+    addContinuation(conv);
+  }
 }
 
 function addContinuation(conv) {
   // If we are continuing, add a prompt!
-  var prompt = yeltzlandSpeech.prompts[Math.floor(Math.random()*yeltzlandSpeech.prompts.length)];
+  var prompt = " " + yeltzlandSpeech.prompts[Math.floor(Math.random()*yeltzlandSpeech.prompts.length)];
   conv.add(prompt)
 
   conv.expectUserResponse = true;
