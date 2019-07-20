@@ -199,7 +199,7 @@ function generateMatchesOutput(conv, mainText, title, matches, teamName) {
       var match = matches[i];
 
       var newMatchRow = []; 
-      newMatchRow.push(yeltzlandSpeech.displayTeamName(match.Opponent)); 
+      newMatchRow.push(match.Opponent); 
       newMatchRow.push((match.Home == "1") ?  "H" : "A");
 
       var fixture = (match.TeamScore == null) || (match.OpponentScore == null); 
