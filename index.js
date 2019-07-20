@@ -72,7 +72,7 @@ app.intent('Result', (conv, params) => {
 
 app.intent('GameScore', (conv) => {
   return gameScore().then(function(result) {
-    generateSingleGameOutput(conv, result.speechOutput, 'Latest score', result.matches);
+    generateSingleGameOutput(conv, result.speechOutput, result.cardTitle, result.matches);
   });
 });
 

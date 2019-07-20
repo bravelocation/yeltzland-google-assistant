@@ -202,6 +202,7 @@ yeltzlandSpeech.gameScore = function(callback) {
                 if (lastGame) {
                     if (data.match.MatchDateTime == lastGame.MatchDateTime) {
                         speechOutput = "The final score was ";
+                        cardTitle = "Final Score"
 
                         yeltzScore = lastGame.TeamScore
                         opponentScore = lastGame.OpponentScore
@@ -223,7 +224,6 @@ yeltzlandSpeech.gameScore = function(callback) {
                     OpponentScore: opponentScore
                 }
 
-                cardTitle = matchToTitle(generatedMatch);
                 matches.push(generatedMatch);
                 team = opponent;
     
