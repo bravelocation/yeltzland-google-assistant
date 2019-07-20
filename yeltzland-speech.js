@@ -186,32 +186,58 @@ yeltzlandSpeech.gameScore = function(callback) {
 
             speechOutput = "The latest score is ";
 
-            if (home) {
-                speechOutput += "Halesowen Town " + speakScore(yeltzScore) + ", " + teamToSpeech(opponent) + " " + speakScore(opponentScore);
-            } else {
-                speechOutput += teamToSpeech(opponent) + " " + speakScore(opponentScore) + ", Halesowen Town " + speakScore(yeltzScore);               
-            }
+            getMatchesData(function(err, fixtures) {
+                var lastGame = null;
+        
+                // Go through each of the matches
+                for (var i = 0; i < fixtures.Matches.length; i++) {
+                    var match = fixtures.Matches[i];      
+                    
+                    if ((match.TeamScore != null) && (match.OpponentScore != null)) {
+                        lastGame = match;
+                    }  
+                }
 
-            var generatedMatch = {
-                Opponent: data.match.Opponent,
-                Home: data.match.Home,
-                TeamScore: data.yeltzScore,
-                OpponentScore: data.opponentScore
-            }
-            cardTitle = matchToTitle(generatedMatch);
-            matches.push(generatedMatch);
-            team = opponent;
+                // Have we finished?
+                if (lastGame) {
+                    if (data.match.MatchDateTime == lastGame.MatchDateTime) {
+                        speechOutput = "The final score was ";
+
+                        yeltzScore = lastGame.TeamScore
+                        opponentScore = lastGame.OpponentScore
+                    }
+                }
+
+                if (home) {
+                    speechOutput += "Halesowen Town " + speakScore(yeltzScore) + ", " + teamToSpeech(opponent) + " " + speakScore(opponentScore);
+                } else {
+                    speechOutput += teamToSpeech(opponent) + " " + speakScore(opponentScore) + ", Halesowen Town " + speakScore(yeltzScore);               
+                }
+    
+                var generatedMatch = {
+                    MatchID: data.match.MatchID,
+                    MatchDateTime: data.match.MatchDateTime,
+                    Opponent: opponent,
+                    Home: home,
+                    TeamScore: yeltzScore,
+                    OpponentScore: opponentScore
+                }
+
+                cardTitle = matchToTitle(generatedMatch);
+                matches.push(generatedMatch);
+                team = opponent;
+    
+                var result = {
+                    speechOutput: speechOutput,
+                    repromptText: repromptText,
+                    cardTitle: cardTitle,
+                    matches: matches,
+                    team: team
+                }
+        
+                callback(result);
+            });
         }
-
-        var result = {
-            speechOutput: speechOutput,
-            repromptText: repromptText,
-            cardTitle: cardTitle,
-            matches: matches,
-            team: team
-        }
-
-        callback(result);
     });    
 };
 
