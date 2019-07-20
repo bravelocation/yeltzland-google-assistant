@@ -255,6 +255,10 @@ yeltzlandSpeech.titleCase = function(teamName) {
      }).join(' ');
 };
 
+yeltzlandSpeech.displayTeamName = function(teamName) {
+    return teamToSpeech(teamName);
+}
+
 /*
 * Helper functions
 */

@@ -160,12 +160,12 @@ function generateSingleGameOutput(conv, mainText, title, matches) {
       var home = (match.Home == "1");
 
       var homeRow = [];
-      homeRow.push(home ? "Halesowen Town" : match.Opponent);
+      homeRow.push(home ? "Halesowen Town" : yeltzlandSpeech.displayTeamName(match.Opponent));
       homeRow.push(home ? match.TeamScore : match.OpponentScore);    
       matchRows.push(homeRow);
 
       var awayRow = [];
-      awayRow.push(!home ? "Halesowen Town" : match.Opponent);
+      awayRow.push(!home ? "Halesowen Town" : yeltzlandSpeech.displayTeamName(match.Opponent));
       awayRow.push(!home ? match.TeamScore : match.OpponentScore);    
       matchRows.push(awayRow);
         
@@ -176,7 +176,7 @@ function generateSingleGameOutput(conv, mainText, title, matches) {
         title: title,
         image: new Image({
           url: yeltzlandSpeech.teamImageUrl(match.Opponent),
-          alt: match.Opponent
+          alt: yeltzlandSpeech.displayTeamName(match.Opponent)
         })
       }));
     }
@@ -199,7 +199,7 @@ function generateMatchesOutput(conv, mainText, title, matches, teamName) {
       var match = matches[i];
 
       var newMatchRow = []; 
-      newMatchRow.push(match.Opponent); 
+      newMatchRow.push(yeltzlandSpeech.displayTeamName(match.Opponent)); 
       newMatchRow.push((match.Home == "1") ?  "H" : "A");
 
       var fixture = (match.TeamScore == null) || (match.OpponentScore == null); 
@@ -218,7 +218,7 @@ function generateMatchesOutput(conv, mainText, title, matches, teamName) {
   
     if (teamName) {
       imageUrl = yeltzlandSpeech.teamImageUrl(teamName);
-      altName = yeltzlandSpeech.titleCase(teamName);
+      altName = yeltzlandSpeech.titleCase(yeltzlandSpeech.displayTeamName(teamName));
     }
 
     conv.add(new Table({
