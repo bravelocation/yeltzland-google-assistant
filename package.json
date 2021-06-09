@@ -8,14 +8,14 @@
     "node": "~6.0"
   },
   "dependencies": {
-    "actions-on-google": "^2.12.0",
+    "actions-on-google": "^2.14.0",
     "dateformat": "*",
     "promise": "^8.1.0",
     "request": "^2.88.2"
   },
   "devDependencies": {
     "bst": "0.0.1",
-    "mocha": "^7.2.0"
+    "mocha": "^9.0.0"
   },
   "scripts": {
     "test": "mocha"
